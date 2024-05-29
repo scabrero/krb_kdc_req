@@ -1,0 +1,9 @@
+[package]
+name = "krb_kdc_req"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+base64 = "0.22.1"
+der = { git = "https://github.com/scabrero/formats.git", branch="der-tag-generalstring", features = ["alloc", "derive", "flagset"] }
+tracing = "0.1.40"
