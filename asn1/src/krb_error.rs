@@ -1,6 +1,8 @@
 use crate::kerberos_string::KerberosString;
 use crate::kerberos_time::KerberosTime;
 use crate::microseconds::Microseconds;
+#[cfg(test)]
+use crate::pa_data::PaData;
 use crate::principal_name::PrincipalName;
 use crate::realm::Realm;
 use der::asn1::OctetString;
@@ -79,11 +81,36 @@ impl<'a> EncodeValue for TaggedKrbError {
     }
 }
 
+/// ```text
+///    If the errorcode is KDC_ERR_PREAUTH_REQUIRED, then the e-data field will
+///    contain an encoding of a sequence of padata fields, each
+///    corresponding to an acceptable pre-authentication method and
+///    optionally containing data for the method:
+///
+///      METHOD-DATA     ::= SEQUENCE OF PA-DATA
+///
+///   For error codes defined in this document other than
+///   KDC_ERR_PREAUTH_REQUIRED, the format and contents of the e-data field
+///   are implementation-defined.  Similarly, for future error codes, the
+///   format and contents of the e-data field are implementation-defined
+///   unless specified otherwise.  Whether defined by the implementation or
+///   in a future document, the e-data field MAY take the form of TYPED-
+///   DATA:
+///
+///   TYPED-DATA      ::= SEQUENCE SIZE (1..MAX) OF SEQUENCE {
+///           data-type       [0] Int32,
+///           data-value      [1] OCTET STRING OPTIONAL
+///   }
+/// ```
+#[cfg(test)]
+pub(crate) type MethodData = Vec<PaData>;
+
 #[cfg(test)]
 mod tests {
+    use crate::constants::{KrbErrorCode, KrbMessageType};
     use crate::kerberos_time::KerberosTime;
-    use crate::krb_error::TaggedKrbError;
-    use crate::constants::{KrbMessageType, KrbErrorCode};
+    use crate::krb_error::{MethodData, TaggedKrbError};
+    use core::iter::zip;
     use der::DateTime;
     use der::Decode;
 
@@ -110,5 +137,48 @@ mod tests {
     }
 
     #[test]
-    fn krb_err_preauth_required() {}
+    fn krb_err_preauth_required() {
+        let blob = "7e81a93081a6a003020105a10302011ea411180f32303234303631323131343830355aa505020301dc66a603020119a90c1b0a41464f524553542e4144aa1f301da003020102a11630141b066b72627467741b0a41464f524553542e4144ac4c044a30483025a103020113a21e041c301a3018a003020112a1111b0f41464f524553542e414475736572313009a103020102a20204003009a103020110a20204003009a10302010fa2020400";
+        let blob = hex::decode(blob).expect("Failed to decode sample");
+        let e = TaggedKrbError::from_der(&blob).expect("Failed to decode");
+
+        assert_eq!(e.0.pvno, 5);
+        assert_eq!(e.0.msg_type, KrbMessageType::KrbError.into());
+        assert_eq!(
+            e.0.stime,
+            KerberosTime::from_date_time(
+                DateTime::new(2024, 06, 12, 11, 48, 05).expect("Failed to build datetime")
+            )
+        );
+        assert_eq!(e.0.susec, 121958);
+        assert_eq!(e.0.error_code, KrbErrorCode::KdcErrPreauthRequired.into());
+        assert_eq!(e.0.service_realm.0.as_str(), "AFOREST.AD");
+        assert_eq!(e.0.service_name.name_type, 2);
+        assert_eq!(e.0.service_name.name_string[0].0.as_str(), "krbtgt");
+        assert_eq!(e.0.service_name.name_string[1].0.as_str(), "AFOREST.AD");
+
+        assert!(e.0.error_data.is_some());
+        let edata = e.0.error_data.as_ref().unwrap();
+        let edata = MethodData::from_der(edata.as_bytes()).expect("Failed to decode");
+
+        let tedata = vec![
+            (
+                19,
+                Some("301a3018a003020112a1111b0f41464f524553542e41447573657231"),
+            ),
+            (2, None),
+            (16, None),
+            (15, None),
+        ];
+        assert_eq!(edata.len(), tedata.len());
+
+        let iter = zip(edata, &tedata);
+        for (pa, tpa) in iter {
+            assert_eq!(pa.padata_type, tpa.0);
+            if tpa.1.is_some() {
+                let tbytes = hex::decode(tpa.1.unwrap()).expect("Failed to decode bytes");
+                assert_eq!(pa.padata_value.as_bytes(), tbytes);
+            }
+        }
+    }
 }
