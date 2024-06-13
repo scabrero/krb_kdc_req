@@ -100,10 +100,11 @@ impl<'a> EncodeValue for TaggedKrbError {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use crate::kerberos_time::KerberosTime;
-    use crate::krb_error::KrbError;
     use crate::krb_error::TaggedKrbError;
+    use crate::constants::KrbErrorCode;
     use base64::prelude::*;
     use der::DateTime;
     use der::Decode;
@@ -125,7 +126,7 @@ mod tests {
             )
         );
         assert_eq!(e.0.susec, 121958);
-        assert_eq!(e.0.error_code, 52);
+        assert_eq!(e.0.error_code, KrbErrorCode::KrbErrResponseTooBig.into());
         assert_eq!(e.0.service_realm.0.as_str(), "AFOREST.AD");
         assert_eq!(e.0.service_name.name_type, 2);
         assert_eq!(e.0.service_name.name_string[0].0.as_str(), "krbtgt");
