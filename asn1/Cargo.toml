@@ -1,0 +1,8 @@
+[package]
+name = "asn1"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+der = { git = "https://github.com/scabrero/formats.git", branch="der-tag-generalstring", features = ["alloc", "derive", "flagset"] }
+base64 = "0.22.1"
