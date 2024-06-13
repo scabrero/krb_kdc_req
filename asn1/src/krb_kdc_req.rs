@@ -46,7 +46,6 @@ mod tests {
     use crate::kerberos_time::KerberosTime;
     use crate::krb_kdc_req::KrbKdcReq;
     use crate::constants::KrbMessageType;
-    use base64::prelude::*;
     use core::iter::zip;
     use der::asn1::OctetString;
     use der::flagset::FlagSet;
@@ -59,7 +58,7 @@ mod tests {
     }
 
     struct TestAsReq {
-        blob: Vec<u8>,
+        blob: String,
         principal: String,
         realm: String,
         padata: Vec<TestPaData>,
@@ -139,7 +138,7 @@ mod tests {
     fn krb_kdc_req_parse() {
         let samples: Vec<TestAsReq> = vec![
             TestAsReq {
-                blob: b"aoGyMIGvoQMCAQWiAwIBCqMaMBgwCqEEAgIAlqICBAAwCqEEAgIAlaICBACkgYYwgYOgBwMFAAAAABChFDASoAMCAQGhCzAJGwd3aWxsaWFtogsbCUtLRENQLkRFVqMeMBygAwIBAqEVMBMbBmtyYnRndBsJS0tEQ1AuREVWpREYDzIwMjQwNDE3MDQxNTQ5WqcGAgR/vaeuqBowGAIBEgIBEQIBFAIBEwIBEAIBFwIBGQIBGg==".to_vec(),
+                blob: "6a81b23081afa103020105a20302010aa31a3018300aa10402020096a2020400300aa10402020095a2020400a48186308183a00703050000000010a1143012a003020101a10b30091b0777696c6c69616da20b1b094b4b4443502e444556a31e301ca003020102a11530131b066b72627467741b094b4b4443502e444556a511180f32303234303431373034313534395aa70602047fbda7aea81a301802011202011102011402011302011002011702011902011a".to_string(),
                 principal: "william".to_string(),
                 realm: "KKDCP.DEV".to_string(),
                 padata: vec![
@@ -161,7 +160,7 @@ mod tests {
                 addresses: None,
             },
             TestAsReq {
-                blob: b"aoH/MIH8oQMCAQWiAwIBCqMtMCswCqEEAgIAlqICBAAwCqEEAgIAlaICBAAwEaEEAgIAgKIJBAcwBaADAQH/pIHAMIG9oAcDBQBQAQAQoRIwEKADAgEBoQkwBxsFdXNlcjGiDBsKQUZPUkVTVC5BRKMfMB2gAwIBAqEWMBQbBmtyYnRndBsKQUZPUkVTVC5BRKURGA8yMDI0MDYxMjE0NTEwOVqnBgIEWGFV3agUMBICARQCARMCARICARECARoCARmpPjA8MA2gAwIBAqEGBATAqAFkMA2gAwIBAqEGBASsEQABMA2gAwIBAqEGBATAqGUBMA2gAwIBAqEGBAQKldZa".to_vec(),
+                blob: "6a81ff3081fca103020105a20302010aa32d302b300aa10402020096a2020400300aa10402020095a20204003011a10402020080a20904073005a0030101ffa481c03081bda00703050050010010a1123010a003020101a10930071b057573657231a20c1b0a41464f524553542e4144a31f301da003020102a11630141b066b72627467741b0a41464f524553542e4144a511180f32303234303631323134353130395aa7060204586155dda814301202011402011302011202011102011a020119a93e303c300da003020102a1060404c0a80164300da003020102a1060404ac110001300da003020102a1060404c0a86501300da003020102a10604040a95d65a".to_string(),
                 principal: "user1".to_string(),
                 realm: "AFOREST.AD".to_string(),
                 padata: vec![
@@ -194,9 +193,7 @@ mod tests {
         ];
 
         for sample in samples {
-            let blob = BASE64_STANDARD
-                .decode(&sample.blob)
-                .expect("Failed to decode sample");
+            let blob = hex::decode(&sample.blob).expect("Failed to decode sample");
             let message = KrbKdcReq::from_der(&blob).expect("Failed to decode");
             match message {
                 KrbKdcReq::AsReq(asreq) => verify_as_req(&asreq, &sample),

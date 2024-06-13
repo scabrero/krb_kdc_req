@@ -111,7 +111,7 @@ mod tests {
     #[test]
     fn krb_err_response_too_big() {
         let blob = "7e5a3058a003020105a10302011ea411180f32303234303631323131343830355aa505020301dc66a603020134a90c1b0a41464f524553542e4144aa1f301da003020102a11630141b066b72627467741b0a41464f524553542e4144";
-        let blob = hex::decode(blob).expect("");
+        let blob = hex::decode(blob).expect("Failed to decode sample");
         let e = TaggedKrbError::from_der(&blob).expect("Failed to decode");
 
         assert_eq!(e.0.pvno, 5);

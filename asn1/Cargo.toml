@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 der = { git = "https://github.com/scabrero/formats.git", branch="der-tag-generalstring", features = ["alloc", "derive", "flagset"] }
-base64 = "0.22.1"
 num_enum = "^0.5.11"
+hex = "0.4.3"
