@@ -41,7 +41,7 @@ impl<'a> ::der::Decode<'a> for KrbKdcReq {
 
 #[cfg(test)]
 mod tests {
-    use crate::constants::KrbMessageType;
+    use crate::constants::{PaDataType, KrbMessageType};
     use crate::kdc_req::KdcReq;
     use crate::kerberos_flags::KerberosFlags;
     use crate::kerberos_time::KerberosTime;
@@ -143,11 +143,11 @@ mod tests {
                 realm: "KKDCP.DEV".to_string(),
                 padata: vec![
                     TestPaData {
-                        padata_type: 150,
+                        padata_type: PaDataType::PadataAsFreshness as u32,
                         padata_value: vec![],
                     },
                     TestPaData {
-                        padata_type: 149,
+                        padata_type: PaDataType::EncpadataReqEncPaRep as u32,
                         padata_value: vec![],
                     }
                 ],
@@ -165,15 +165,15 @@ mod tests {
                 realm: "AFOREST.AD".to_string(),
                 padata: vec![
                     TestPaData {
-                        padata_type: 150,
+                        padata_type: PaDataType::PadataAsFreshness as u32,
                         padata_value: vec![],
                     },
                     TestPaData {
-                        padata_type: 149,
+                        padata_type: PaDataType::EncpadataReqEncPaRep as u32,
                         padata_value: vec![],
                     },
                     TestPaData {
-                        padata_type: 128,
+                        padata_type: PaDataType::PaPacRequest as u32,
                         padata_value: vec![0x30, 0x05, 0xa0, 0x03, 0x01, 0x01, 0xff],
                     }
                 ],

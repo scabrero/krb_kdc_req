@@ -107,7 +107,7 @@ pub(crate) type MethodData = Vec<PaData>;
 
 #[cfg(test)]
 mod tests {
-    use crate::constants::{KrbErrorCode, KrbMessageType};
+    use crate::constants::{KrbErrorCode, KrbMessageType, PaDataType};
     use crate::kerberos_time::KerberosTime;
     use crate::krb_error::{MethodData, TaggedKrbError};
     use core::iter::zip;
@@ -163,18 +163,18 @@ mod tests {
 
         let tedata = vec![
             (
-                19,
+                PaDataType::PaEtypeInfo2,
                 Some("301a3018a003020112a1111b0f41464f524553542e41447573657231"),
             ),
-            (2, None),
-            (16, None),
-            (15, None),
+            (PaDataType::PaEncTimestamp, None),
+            (PaDataType::PaPkAsReq, None),
+            (PaDataType::PaPkAsRepOld, None),
         ];
         assert_eq!(edata.len(), tedata.len());
 
         let iter = zip(edata, &tedata);
         for (pa, tpa) in iter {
-            assert_eq!(pa.padata_type, tpa.0);
+            assert_eq!(pa.padata_type, tpa.0 as u32);
             if tpa.1.is_some() {
                 let tbytes = hex::decode(tpa.1.unwrap()).expect("Failed to decode bytes");
                 assert_eq!(pa.padata_value.as_bytes(), tbytes);
