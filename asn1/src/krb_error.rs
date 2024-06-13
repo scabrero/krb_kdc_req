@@ -104,7 +104,7 @@ impl<'a> EncodeValue for TaggedKrbError {
 mod tests {
     use crate::kerberos_time::KerberosTime;
     use crate::krb_error::TaggedKrbError;
-    use crate::constants::KrbErrorCode;
+    use crate::constants::{KrbMessageType, KrbErrorCode};
     use base64::prelude::*;
     use der::DateTime;
     use der::Decode;
@@ -118,7 +118,7 @@ mod tests {
         let e = TaggedKrbError::from_der(&blob).expect("Failed to decode");
 
         assert_eq!(e.0.pvno, 5);
-        assert_eq!(e.0.msg_type, 30);
+        assert_eq!(e.0.msg_type, KrbMessageType::KrbError.into());
         assert_eq!(
             e.0.stime,
             KerberosTime::from_date_time(

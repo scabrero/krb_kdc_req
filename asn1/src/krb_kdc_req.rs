@@ -45,6 +45,7 @@ mod tests {
     use crate::kerberos_flags::KerberosFlags;
     use crate::kerberos_time::KerberosTime;
     use crate::krb_kdc_req::KrbKdcReq;
+    use crate::constants::KrbMessageType;
     use base64::prelude::*;
     use core::iter::zip;
     use der::asn1::OctetString;
@@ -73,7 +74,7 @@ mod tests {
 
     fn verify_as_req(asreq: &KdcReq, tasreq: &TestAsReq) {
         assert_eq!(asreq.pvno, 5);
-        assert_eq!(asreq.msg_type, 10);
+        assert_eq!(asreq.msg_type, KrbMessageType::KrbAsReq.into());
 
         let pa = asreq.padata.as_ref().unwrap();
         assert_eq!(pa.len(), tasreq.padata.len());
