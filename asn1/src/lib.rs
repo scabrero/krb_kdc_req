@@ -1,3 +1,4 @@
+mod constants;
 mod encrypted_data;
 mod host_address;
 mod host_addresses;
@@ -14,4 +15,3 @@ mod pa_data;
 mod principal_name;
 mod realm;
 mod tagged_ticket;
-mod constants;

@@ -41,11 +41,11 @@ impl<'a> ::der::Decode<'a> for KrbKdcReq {
 
 #[cfg(test)]
 mod tests {
+    use crate::constants::KrbMessageType;
     use crate::kdc_req::KdcReq;
     use crate::kerberos_flags::KerberosFlags;
     use crate::kerberos_time::KerberosTime;
     use crate::krb_kdc_req::KrbKdcReq;
-    use crate::constants::KrbMessageType;
     use core::iter::zip;
     use der::asn1::OctetString;
     use der::flagset::FlagSet;
