@@ -56,27 +56,6 @@ pub(crate) struct KrbError {
 #[derive(Debug, Eq, PartialEq)]
 struct TaggedKrbError(KrbError);
 
-//impl<'a> ::der::Decode<'a> for KrbError {
-//    fn decode<R: der::Reader<'a>>(decoder: &mut R) -> der::Result<Self> {
-//        let tag: der::Tag = decoder.decode()?;
-//        let _len: der::Length = decoder.decode()?;
-//
-//        match tag {
-//            Tag::Application {
-//                constructed: true,
-//                number: TagNumber::N30,
-//            } => {
-//                let e: KrbError = decoder.decode()?;
-//                Ok(e)
-//            }
-//            _ => Err(der::Error::from(der::ErrorKind::TagUnexpected {
-//                expected: None,
-//                actual: tag,
-//            })),
-//        }
-//    }
-//}
-
 impl FixedTag for TaggedKrbError {
     const TAG: Tag = Tag::Application {
         constructed: true,
