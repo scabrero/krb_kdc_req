@@ -42,5 +42,4 @@ pub enum PaDataType {
     EncpadataReqEncPaRep = 149,    // RFC 6806
     PadataAsFreshness = 150,       // RFC 8070
     PadataSpake = 151,             // draft-ietf-kitten-krb-spake-preauth-13
-
 }
