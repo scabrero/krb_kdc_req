@@ -12,8 +12,25 @@ use der::Sequence;
 pub(crate) struct EncryptedData {
     #[asn1(context_specific = "0")]
     etype: i32,
-    #[asn1(context_specific = "1")]
-    kvno: u32,
+    #[asn1(context_specific = "1", optional = "true")]
+    kvno: Option<u32>,
     #[asn1(context_specific = "2")]
     cipher: OctetString,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::constants::EncryptionType;
+    use crate::encrypted_data::EncryptedData;
+    use der::Decode;
+
+    #[test]
+    fn encrypted_data_parse() {
+        let blob = "3041a003020112a23a0438a708af058781f75eb72d318ecae2f2830aa8ad4c659faeb477e29e131f923db70a33247ed25aa9d7dda218bcdbdf2203e2125fce1465265e";
+        let blob = hex::decode(&blob).expect("Failed to decode sample");
+        let edata = EncryptedData::from_der(&blob).expect("Failed to decode");
+        assert_eq!(edata.etype, EncryptionType::AES256_CTS_HMAC_SHA1_96 as i32);
+        let tcipher = hex::decode("a708af058781f75eb72d318ecae2f2830aa8ad4c659faeb477e29e131f923db70a33247ed25aa9d7dda218bcdbdf2203e2125fce1465265e").expect("Failed to decode sample");
+        assert_eq!(edata.cipher.as_bytes(), tcipher);
+    }
 }
