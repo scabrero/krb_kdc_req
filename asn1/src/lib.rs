@@ -13,6 +13,7 @@ mod krb_error;
 mod krb_kdc_req;
 mod microseconds;
 mod pa_data;
+mod pa_enc_ts_enc;
 mod principal_name;
 mod realm;
 mod tagged_ticket;
