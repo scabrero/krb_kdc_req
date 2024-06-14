@@ -41,7 +41,7 @@ impl<'a> ::der::Decode<'a> for KrbKdcReq {
 
 #[cfg(test)]
 mod tests {
-    use crate::constants::{PaDataType, KrbMessageType};
+    use crate::constants::{EncryptionType, KrbMessageType, PaDataType};
     use crate::kdc_req::KdcReq;
     use crate::kerberos_flags::KerberosFlags;
     use crate::kerberos_time::KerberosTime;
@@ -156,7 +156,16 @@ mod tests {
                 till: KerberosTime::from_date_time(DateTime::new(2024, 04, 17, 04, 15, 49).expect("Failed to build DateTime")),
                 rtime: None,
                 nonce: 2143135662,
-                etype: vec![18, 17, 20, 19, 16, 23, 25, 26],
+                etype: vec![
+                    EncryptionType::AES256_CTS_HMAC_SHA1_96 as i32,
+                    EncryptionType::AES128_CTS_HMAC_SHA1_96 as i32,
+                    EncryptionType::AES256_CTS_HMAC_SHA384_192 as i32,
+                    EncryptionType::AES128_CTS_HMAC_SHA256_128 as i32,
+                    EncryptionType::DES3_CBC_SHA1_KD as i32,
+                    EncryptionType::RC4_HMAC as i32,
+                    EncryptionType::CAMELLIA128_CTS_CMAC as i32,
+                    EncryptionType::CAMELLIA256_CTS_CMAC as i32,
+                ],
                 addresses: None,
             },
             TestAsReq {
@@ -182,7 +191,14 @@ mod tests {
                 till: KerberosTime::from_date_time(DateTime::new(2024, 06, 12, 14, 51, 09).expect("Failed to build DateTime")),
                 rtime: None,
                 nonce: 1482773981,
-                etype: vec![20, 19, 18, 17, 26, 25],
+                etype: vec![
+                    EncryptionType::AES256_CTS_HMAC_SHA384_192 as i32,
+                    EncryptionType::AES128_CTS_HMAC_SHA256_128 as i32,
+                    EncryptionType::AES256_CTS_HMAC_SHA1_96 as i32,
+                    EncryptionType::AES128_CTS_HMAC_SHA1_96 as i32,
+                    EncryptionType::CAMELLIA256_CTS_CMAC as i32,
+                    EncryptionType::CAMELLIA128_CTS_CMAC as i32,
+                ],
                 addresses: Some(vec![
                     (2, OctetString::new(vec![0xc0, 0xa8, 0x01, 0x64]).expect("Failed to build octet string")),
                     (2, OctetString::new(vec![0xAC, 0x11, 0x00, 0x01]).expect("Failed to build octet string")),
