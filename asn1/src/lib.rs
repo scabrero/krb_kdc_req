@@ -1,5 +1,6 @@
 mod constants;
 mod encrypted_data;
+mod etype_info2;
 mod host_address;
 mod host_addresses;
 mod kdc_options;
